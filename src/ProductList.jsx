@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
+import { useSelector, useDispatch } from "react-redux";
 import { addItem } from "./CartSlice";
 
 function ProductList({ onHomeClick }) {
   const [showCart, setShowCart] = useState(false);
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+  const [addedToCart, setAddedToCart] = useState({});
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
   const plantsArray = [
     {
@@ -279,6 +283,7 @@ function ProductList({ onHomeClick }) {
     e.preventDefault();
     setShowCart(true); // Set showCart to true when cart icon is clicked
   };
+
   const handlePlantsClick = (e) => {
     e.preventDefault();
     setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
@@ -290,8 +295,6 @@ function ProductList({ onHomeClick }) {
     setShowCart(false);
   };
 
-  const [addItem, setAddedToCart] = useState({});
-
   const handleAddToCart = (product) => {
     dispatch(addItem(product)); // Dispatch the action to add the product to the cart (Redux action)
 
@@ -300,12 +303,6 @@ function ProductList({ onHomeClick }) {
       ...prevState, // Spread the previous state to retain existing entries
       [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
     }));
-  };
-
-  const calculateTotalQuantity = () => {
-    return CartItem
-      ? CartItem.reduce((total, product) => total + product.quantity, 0)
-      : 0;
   };
 
   return (
@@ -327,13 +324,11 @@ function ProductList({ onHomeClick }) {
         </div>
         <div style={styleObjUl}>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>
               Plants
             </a>
           </div>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
               <h1 className="cart">
                 <svg
@@ -343,13 +338,7 @@ function ProductList({ onHomeClick }) {
                   height="68"
                   width="68"
                 >
-                  <rect
-                    width="156"
-                    height="156"
-                    rx="15"
-                    ry="15"
-                    fill="none"
-                  ></rect>
+                  <rect width="156" height="156" fill="none"></rect>
                   <circle cx="80" cy="216" r="12"></circle>
                   <circle cx="184" cy="216" r="12"></circle>
                   <path
@@ -361,6 +350,15 @@ function ProductList({ onHomeClick }) {
                     strokeWidth="2"
                     id="mainIconPathAttribute"
                   ></path>
+                  <text
+                    x="90"
+                    y="155"
+                    fontFamily="Verdana"
+                    fontSize="90"
+                    fill="white"
+                  >
+                    {cart.numOfItems}
+                  </text>
                 </svg>
               </h1>
             </a>
@@ -368,50 +366,52 @@ function ProductList({ onHomeClick }) {
         </div>
       </div>
       {!showCart ? (
-        <div className="product-grid">
+        <div>
           {plantsArray.map(
             (
-              category,
-              index // Loop through each category in plantsArray
+              section,
+              sectionIndex // Loop through each category in plantsArray
             ) => (
-              <div key={index}>
-                {" "}
+              <div className="product-grid" key={sectionIndex}>
                 {/* Unique key for each category div */}
-                <h1>
-                  <div>{category.category}</div>{" "}
+                <h2 className="plant_heading">
+                  {section.category}
                   {/* Display the category name */}
-                </h1>
+                </h2>
                 <div className="product-list">
-                  {" "}
                   {/* Container for the list of plant cards */}
-                  {category.plants.map(
+                  {section.plants.map(
                     (
-                      product,
-                      productIndex // Loop through each plant in the current category
+                      plant,
+                      plantIndex // Loop through each plant in the current category
                     ) => (
-                      <div className="product-card" key={productIndex}>
-                        {" "}
+                      <div className="product-card" key={plantIndex}>
+                        <h3 className="product-title">{plant.name}</h3>
                         {/* Unique key for each plant card */}
                         <img
                           className="product-image"
-                          src={product.image} // Display the plant image
-                          alt={product.name} // Alt text for accessibility
+                          src={plant.image} // Display the plant image
+                          alt={plant.name} // Alt text for accessibility
                         />
-                        <div className="product-title">{product.name}</div>{" "}
+                        <p className="product-price">{plant.cost}</p>{" "}
                         {/* Display plant name */}
                         {/* Display other plant details like description and cost */}
-                        <div className="product-description">
-                          {product.description}
-                        </div>{" "}
+                        <p className="product-description">
+                          {plant.description}
+                        </p>
                         {/* Display plant description */}
-                        <div className="product-cost">{product.cost}</div>{" "}
-                        {/* Display plant cost */}
-                        <button
-                          className="product-button"
-                          onClick={() => handleAddToCart(product)} // Handle adding plant to cart
-                        >
-                          Add to Cart
-                        </button>
+                        {cart.items.some((item) => item.name === plant.name) ? (
+                          <button className="product-button added-to-cart">
+                            Added to Cart
+                          </button>
+                        ) : (
+                          <button
+                            className="product-button"
+                            onClick={() => handleAddToCart(plant)}
+                          >
+                            Add to Cart
+                          </button>
+                        )}
                       </div>
                     )
                   )}
