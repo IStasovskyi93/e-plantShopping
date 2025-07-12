@@ -21,7 +21,7 @@ const CartItem = ({ onContinueShopping }) => {
     let totalCost = 0;
     cart.forEach((item) => {
       const itemCost = parseItemCostToInteger(item.cost);
-      totalCost += item.cost * item.quantity;
+      totalCost += itemCost * item.quantity;
     });
     return totalCost;
   };
