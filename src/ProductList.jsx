@@ -290,13 +290,8 @@ function ProductList({ onHomeClick }) {
     setShowCart(false);
   };
 
-  const [addedToCart, setAddedToCart] = useState({});
+  const [addItem, setAddedToCart] = useState({});
 
-  const calculateTotalQuantity = () => {
-    return CartItems
-      ? CartItems.reduce((total, item) => total + item.quantity, 0)
-      : 0;
-  };
   const handleAddToCart = (product) => {
     dispatch(addItem(product)); // Dispatch the action to add the product to the cart (Redux action)
 
@@ -305,6 +300,12 @@ function ProductList({ onHomeClick }) {
       ...prevState, // Spread the previous state to retain existing entries
       [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
     }));
+  };
+
+  const calculateTotalQuantity = () => {
+    return CartItem
+      ? CartItem.reduce((total, product) => total + product.quantity, 0)
+      : 0;
   };
 
   return (
@@ -342,16 +343,22 @@ function ProductList({ onHomeClick }) {
                   height="68"
                   width="68"
                 >
-                  <rect width="156" height="156" fill="none"></rect>
+                  <rect
+                    width="156"
+                    height="156"
+                    rx="15"
+                    ry="15"
+                    fill="none"
+                  ></rect>
                   <circle cx="80" cy="216" r="12"></circle>
                   <circle cx="184" cy="216" r="12"></circle>
                   <path
                     d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8"
                     fill="none"
                     stroke="#faf9f9"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     id="mainIconPathAttribute"
                   ></path>
                 </svg>
@@ -379,29 +386,29 @@ function ProductList({ onHomeClick }) {
                   {/* Container for the list of plant cards */}
                   {category.plants.map(
                     (
-                      plant,
-                      plantIndex // Loop through each plant in the current category
+                      product,
+                      productIndex // Loop through each plant in the current category
                     ) => (
-                      <div className="product-card" key={plantIndex}>
+                      <div className="product-card" key={productIndex}>
                         {" "}
                         {/* Unique key for each plant card */}
                         <img
                           className="product-image"
-                          src={plant.image} // Display the plant image
-                          alt={plant.name} // Alt text for accessibility
+                          src={product.image} // Display the plant image
+                          alt={product.name} // Alt text for accessibility
                         />
-                        <div className="product-title">{plant.name}</div>{" "}
+                        <div className="product-title">{product.name}</div>{" "}
                         {/* Display plant name */}
                         {/* Display other plant details like description and cost */}
                         <div className="product-description">
-                          {plant.description}
+                          {product.description}
                         </div>{" "}
                         {/* Display plant description */}
-                        <div className="product-cost">{plant.cost}</div>{" "}
+                        <div className="product-cost">{product.cost}</div>{" "}
                         {/* Display plant cost */}
                         <button
                           className="product-button"
-                          onClick={() => handleAddToCart(plant)} // Handle adding plant to cart
+                          onClick={() => handleAddToCart(product)} // Handle adding plant to cart
                         >
                           Add to Cart
                         </button>
